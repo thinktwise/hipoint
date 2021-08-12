@@ -1,15 +1,18 @@
 {
+"update_url": "https://clients2.google.com/service/update2/crx",
+
   "name": "Yawas",
   "author": "Laurent Denoue",
   "manifest_version": 2,
-  "version": "7.3.3",
+  "version": "7.3.2",
   "description": "Highlight Web pages; stored online and recreated automatically when you revisit a page",
   "background": {"scripts": ["yawas-background.js"]},
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
       "exclude_matches": ["*://*.slack.com/*","*://web.whatsapp.com/*","*://www.google.com/bookmarks/*","*://accounts.google.com/*"],
-      "js": ["yawas-content-script.js"],
+      "js": ["popper.min.js", "tippy.min.js", "yawas-content-script.js"],
+      "css": ["light-border.css", "tippy_content.css"],
       "all_frames": true
     }
   ],

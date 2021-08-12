@@ -10,6 +10,7 @@ var rightMark = '>>';//'&rdquo;'
 var lenQuote = rightMark.length;
 var handlePDF = false;
 var saveLocally = false;
+//var donate_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=R9JRASMAABUUE&item_name=Yawas+Web+and+PDF+Highlighter&currency_code=USD&source=chromeextension';
 var googleSignature = null;
 
 chrome.runtime.onMessage.addListener(requestCallback);
@@ -142,9 +143,7 @@ function yawas_getAnnotations(webUrl,cb)
     googleSignature = null; // invalidate signature
 
     webUrl = purifyURL(webUrl);
-    //var url = "https://www.google.com/bookmarks/find?output=rss&q=" + encodeURIComponent(webUrl);
-    // escape fixes issue https://github.com/ldenoue/yawas/issues/11 because url had ' in it
-    var url = "https://www.google.com/bookmarks/find?output=rss&q=" + escape(webUrl);
+    var url = "https://www.google.com/bookmarks/find?output=rss&q=" + encodeURIComponent(webUrl);
     var xhr = new XMLHttpRequest();
     //xhr.withCredentials = true;
     abortTimerId = window.setTimeout(function() {
@@ -638,6 +637,7 @@ function requestCallback(request, sender, sendResponse)
   //console.log('requestCallback',request);
   if (request.fn === 'yawas_getAnnotations')
   {
+    console.log("BG: 'yawas_getAnnotations' message received ( content.js is asking BG to retrieve all anotations )");
     yawas_getAnnotations(request.url,function(res){
       signedin = !res.error;
       sendResponse(res);
@@ -655,6 +655,7 @@ function requestCallback(request, sender, sendResponse)
   }
   else if (request.fn === 'addhighlight')
   {
+    console.log("BG: 'addhighlight' message received ( content.js is asking BG to save anotations )");
      yawas_storeHighlight(request.url,request.title,request.selection,request.occurence,request.couleur,null,function (res){
       signedin = !res.error;
       sendResponse(res);
@@ -863,28 +864,28 @@ function getEditHandler() {
                          });*/
 
 chrome.contextMenus.create({
-                           "id" : "yellow",
+                           "id" : "1",
                            "title" : "Yellow",// (Ctrl-Shift-Y)",
                            "type" : "normal",
                            "contexts" : ["selection"],
                            "onclick" : getClickHandler()
                            });
 chrome.contextMenus.create({
-                           "id" : "red",
+                           "id" : "2",
                            "title" : "Red",// (Ctrl-Shift-R)",
                            "type" : "normal",
                            "contexts" : ["selection"],
                            "onclick" : getClickHandler()
                            });
 chrome.contextMenus.create({
-                           "id" : "blue",
+                           "id" : "4",
                            "title" : "Blue",// (Ctrl-Shift-B)",
                            "type" : "normal",
                            "contexts" : ["selection"],
                            "onclick" : getClickHandler()
                            });
 chrome.contextMenus.create({
-                           "id" : "green",
+                           "id" : "8",
                            "title" : "Green",// (Ctrl-Shift-G)",
                            "type" : "normal",
                            "contexts" : ["selection"],

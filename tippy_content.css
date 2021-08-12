@@ -1,0 +1,29 @@
+.tippy_icons {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: inherit;
+    cursor: pointer;
+}
+
+ .tippy_icons:hover {
+    transition: transform 0.1s ease-out 0.1s;
+    transform: scale(1.2);
+  } 
+
+.tippy_icons:active {
+    border: none;
+    box-shadow: 0 0 8px rgba(33,33,33,.5); 
+  }
+
+.tippy_title {
+    margin: 5px 0px;
+    color: rgb(119, 119, 119);
+}
+
+.tippy_list {
+    margin: 0px;
+    padding-left: 0px;
+    list-style: none;
+    text-align: left;
+}
