@@ -1,3 +1,4 @@
+// hola
 var signedin = false;
 var highlightswrapper = document.querySelector('#yawas_highlightswrapper');
 var forecolor = "#000000";
