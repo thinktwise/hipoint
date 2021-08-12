@@ -1,22 +1,181 @@
-// hola
+console.log("el yawas-content-script.js !!");
 var signedin = false;
 var highlightswrapper = document.querySelector('#yawas_highlightswrapper');
 var forecolor = "#000000";
-var currentColor = "yellow";
+var currentColor = 0;
 var hoverColor = 'lightgray';//'pink'
 var hoverElement = null;
 var lastHighlight = null;
 var leftMark = '<<';//'&ldquo;'
 var rightMark = '>>';//'&rdquo;'
 var lenquote = rightMark.length;//2;
+
+var selecting = false;
+
 var googleColors = [];
-googleColors['yellow'] = 'yellow';
-googleColors['blue'] = '#0df';//'lightblue';
-googleColors['red'] = '#ff9999';
-googleColors['green'] = '#99ff99';
-googleColors['white'] = 'transparent';
+googleColors[1] = 'yellow';             //googleColors['yellow'] = 'yellow';
+googleColors[2] = '#0df';//'lightblue';   //googleColors['blue'] = '#0df';//'lightblue';
+googleColors[4] = '#ff9999';               //googleColors['red'] = '#ff9999';
+googleColors[8] = '#99ff99';             //googleColors['green'] = '#99ff99';
+googleColors['white'] = 'transparent';         //googleColors['white'] = 'transparent';
 var notRemapped = [];
 
+/* @sscalvo: New encoding
+Yawas stores colors with 4 strings ("blue", "green", "yellow", "red") in the request.couleur field
+Thinktwise will make use of the request.couleur to bitwise encode Yawas colors + ["boder width", "color codes"]
+This is how it works:
+///// Yawas colors (mutually exclusive): will use bit 5 & 6
+0b00xxxx: blue
+0b01xxxx: green
+0b10xxxx: yellow
+0b11xxxx: red
+///// Thinktwise will use bits 1,2,3,4 to encode all the 16 wheel combinations: See 'code2color' dictionary
+*/
+
+// @sscalvo: Wont store color names anymore, but numbers (1,2,4,8)
+var color2code = {
+  yellow: 0b000000,
+  red:    0b010000,
+  blue:   0b100000,
+  green:  0b110000
+}
+
+// ["boder width", "color codes"] for implementing thinktwise wheel
+var code2color = {
+  0b0000: ["thin thin thin thin", "lightgray lightgray lightgray lightgray"], // 0: no key-wheel selected, only thin gray borders to show text selected
+  0b0001: ["thin thin medium thin", "lightgray lightgray yellow lightgray"],  // 1: yellow         (bottom side of wheel)
+  0b0010: ["thin thin thin medium", "lightgray lightgray lightgray red"],     // 2: red            (left of wheel)
+  0b0011: ["thin thin medium medium", "lightgray lightgray yellow red"],      // 3: yellow + red
+  0b0100: ["medium thin thin thin", "blue lightgray lightgray lightgray"],    // 4: blue           (top of wheel)
+  0b0101: ["medium thin medium thin", "blue lightgray yellow lightgray"],     // 5: blue + yellow
+  0b0110: ["medium thin thin medium", "blue lightgray lightgray red"],        // 6: blue + red
+  0b0111: ["medium thin medium medium", "blue lightgray yellow red"],         // 7: blue + yellow + red
+  0b1000: ["thin medium thin thin", "lightgray green lightgray lightgray"],   // 8: green          (right of wheel)
+  0b1001: ["thin medium medium thin", "lightgray green yellow lightgray"],    // 9: green + yellow
+  0b1010: ["thin medium thin medium", "lightgray green lightgray red"],       // 10: green + red
+  0b1011: ["thin medium medium medium", "lightgray green yellow red"],        // 11: green + yellow + red
+  0b1100: ["medium medium thin thin", "blue green lightgray lightgray"],      // 12: blue + green 
+  0b1101: ["medium medium medium thin", "blue green yellow lightgray"],       // 13: blue + green + yellow
+  0b1110: ["medium medium thin medium", "blue green lightgray red"],          // 14: blue + green + red
+  0b1111: ["medium medium medium medium", "blue green yellow red"],          // 15: blue + green + yellow + red
+}
+
+// @sscalvo: Wont store color names anymore, but numbers (1,2,4,8) and all their combinations
+//                          0      0b0001   0b0010     3     0b0100     5         6         7      0b1000      9         10        11        12       13        14        15
+var yawas_rosetta = ["yellow", "yellow", "red", "yellow", "blue", "yellow", "yellow", "yellow", "green", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow" ]
+
+var ccc = 'rojo';
+
+function colorin(c){
+  console.log("Has elegido " +c );
+}
+
+// --------------------  tippy popover creation  -----------------
+tippy_content = `<div>
+  <p class="tippy_title">Pick your reaction</p>
+  <hr>
+  <div class="tippy_list">
+    <button  class="tippy_icons" id="ybutton">
+      <span role="img" >🟡</span>
+    </button>
+    <button class="tippy_icons" id="rbutton">
+      <span role="img" >🔴</span>
+    </button>
+    <button class="tippy_icons" id="bbutton">
+      <span role="img" >🔵</span>
+    </button>
+    <button  class="tippy_icons" id="gbutton">
+      <span role="img">🟢</span>
+    </button>
+    <button  class="tippy_icons" id="xbutton">
+      <span role="img">❌</span>
+    </button>
+    </div>
+</div>
+`;
+
+// https://stackoverflow.com/questions/3103962/converting-html-string-into-dom-elements
+var tmp_doc = new DOMParser().parseFromString(tippy_content, "text/html");
+var tippy_doc = tmp_doc.body.firstChild;
+// --------------------  tippy popover creation  -----------------
+
+
+function isSelected(){
+  if ( selecting==true)
+    return;
+  //isSelected solo deberia mostrar el menu de Tippy desde aqui
+  //Y ese menu debería, eternamente, permitir clicks & unclicks
+  
+  // Digamos que el usuario (a traves de Tippy) elige BLUE : 4
+  // currentColor = 0;
+
+  var elem = hoverElementOrSelection(); 
+  console.log("---> Imprimiendo el elem");
+  console.log(elem);
+  // If user's selection contains/intersects a 'yawas-highlight' node, get current values to show popover coherently
+  if (elem) 
+  {
+    // elem.dataset.yawasColor = googleColors[color];
+    // elem.style.backgroundColor = googleColors[color];
+    // childrenToo(hoverElement,googleColors[color]);
+    // updateHighlight(hoverElement,color,null);
+    // clear the selection (on Firefox we selected the text inside oncontextmenu)
+    // window.getSelection().removeAllRanges();
+    console.log("Tippy launcher: editamos un highlight EXISTENTE");
+    // elem.style.borderWidth = code2color[currentColor][0];
+    // elem.style.borderColor = code2color[currentColor][1];
+    // hoverElement = elem;
+    // recolor(color);
+  }
+  else
+  {
+    var wndWithSelection = getWindowWithSelection(window);
+    yawas_tryHighlight(wndWithSelection); // lastHighlight should have been updated
+    elem = lastHighlight;
+    console.log("Tippy launcher: creamos un NUEVO highlight");
+  }  
+  // console.log( "borderWidht: " + elem.style.borderWidth + " borderColor: "+ elem.style.borderColor);
+  // candidates = document.querySelectorAll("[data-selection='e todos l']")[0];
+  // console.log(elem.dataset.yawasSelection);
+  
+  selecting=true;
+  tippy(elem, {
+    content: tippy_doc,
+    interactive: true,
+    arrow: true,
+    allowHTML: true,
+    hideOnClick: false, 
+    theme: 'light-border',
+    onHide(){
+      console.log("tippy onHide");
+    },
+    onHidden(){
+      console.log("tippy onHidden");
+    },
+    onShown(){
+      selecting=false;
+      console.log("tippy onShown: selecting " + selecting);
+    },
+    onShow(){
+      console.log("tippy onShow");
+
+    },
+    onMount(){
+      console.log("tippy onMount");
+      // This buttons only exist in the DOM after tippy onMount has been triggered
+      ybutton = document.getElementById("ybutton").onclick=function(){yawas_chrome_thinktwise(0b0001,elem)}; //yellow
+      rbutton = document.getElementById("rbutton").onclick=function(){yawas_chrome_thinktwise(0b0010,elem)}; //red
+      bbutton = document.getElementById("bbutton").onclick=function(){yawas_chrome_thinktwise(0b0100,elem)}; //blue
+      gbutton = document.getElementById("gbutton").onclick=function(){yawas_chrome_thinktwise(0b1000,elem)}; //green
+      console.log(bbutton);
+    }
+  })
+
+}
+
+document.addEventListener('mouseup', isSelected);
+
+// This is for the floating box that shows counter 
 function dragElement(div)
 {
   let draggedDiv = div;
@@ -298,6 +457,7 @@ function yawas_undohighlight()
   }
 }
 
+// This is for the floating box that shows counter 
 function addHighlightsWrapper()
 {
   if (highlightswrapper === null)
@@ -393,7 +553,7 @@ function yawas_storeHighlight(webUrl,title,highlight,occurence,couleur,addcommen
         "url": webUrl,
         "selection": highlight,
         "occurence": occurence,
-        "couleur": couleur
+        "couleur": couleur //+ "twc"
     };
     sendMessage(additionalInfo, function (res)
     {
@@ -422,6 +582,7 @@ function yawas_storeHighlight(webUrl,title,highlight,occurence,couleur,addcommen
     });
 }
 
+// Actual coloring happens here
 function yawas_tryHighlight(wnd,addcommentwhendone)
 {
     if (!wnd)
@@ -434,11 +595,11 @@ function yawas_tryHighlight(wnd,addcommentwhendone)
     selectionstring = selectionstring.trim();
     if (selectionstring.length === 0)
         return false;
-    if (selectionstring.indexOf("\n") >= 0)
-    {
-        alert("Please select text without new lines");
-        return false;
-    }
+    // if (selectionstring.indexOf("\n") >= 0)  //TODO thinktwise: Also accept text with new lines
+    // {
+    //     alert("Please select text without new lines");
+    //     return false;
+    // }
     var docurl = yawas_getGoodUrl(wnd.document);
     var occurence = -1;
     wnd.getSelection().removeAllRanges();
@@ -479,6 +640,7 @@ function getWindowWithSelection(wnd)
         return null;
 }
 
+// See below for recolor version of thinktwise @sscalvo
 function recolor(color)
 {
   if (color === 'note')
@@ -518,6 +680,18 @@ function recolor(color)
   }
 }
 
+function recolor_thinktwise(color)
+{
+  //hoverElement.dataset.yawasColor = googleColors[color];
+  //hoverElement.style.backgroundColor = googleColors[color];
+  hoverElement.style.borderWidth = code2color[color][0];
+  hoverElement.style.borderColor = code2color[color][1];
+  // childrenToo(hoverElement,googleColors[color]);
+  updateHighlight(hoverElement,color,null);
+  // clear the selection (on Firefox we selected the text inside oncontextmenu)
+  window.getSelection().removeAllRanges();
+}
+
 // from http://stackoverflow.com/questions/1482832/how-to-get-all-elements-that-are-highlighted/1483487#1483487
 function rangeIntersectsNode(range, node) {
     var nodeRange;
@@ -552,6 +726,7 @@ function sendMessage(info,cb)
   }
 }
 
+// see below yawas_chrome_thinktwise for thinktwise version @sscalvo
 function yawas_chrome(color)
 {
     if (color === 'email')
@@ -599,6 +774,17 @@ function yawas_chrome(color)
         yawas_tryHighlight(wndWithSelection);
     }
 }
+
+function yawas_chrome_thinktwise(color, elem)
+{
+
+  currentColor = currentColor ^ color; //toggle colors bitwise
+  // var elem = hoverElementOrSelection();
+  hoverElement = elem;
+  recolor_thinktwise(currentColor);
+}
+
+
 
 function yawas_remapAnnotations(highlights)
 {
@@ -706,11 +892,21 @@ function highlightDoc(wnd,doc,highlights)
     return nremapped;
 }
 
+function twWheel(node, color){
+
+  node.style.border="solid"
+  node.style.borderWidth = "thin medium thin medium"
+  node.style.borderRadius = "25px"
+}
+
 function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring,occurence,comment)
 {
     let baseNode = doc.createElement("yawas");//span was changing styling on some web pages
     baseNode.className = 'yawas-highlight';
-    baseNode.style.backgroundColor = googleColors[color];
+    baseNode.style.backgroundColor = googleColors[color]; // @sscalvo 
+    baseNode.addEventListener("mouseenter", function( event ) {console.log("hoveringgg: Llamar a la funcion que muestra tippy");
+  });
+
     if (comment && comment > '')
     {
       baseNode.dataset.comment = comment;
@@ -721,6 +917,12 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
     baseNode.dataset.selection = selectionstring;
     baseNode.dataset.yawasOccurence = occurence;
     baseNode.dataset.yawasColor = googleColors[color];
+
+    // @sscalvo added
+    baseNode.style.border="solid";
+    baseNode.style.borderWidth = code2color[color][0];
+    baseNode.style.borderColor = code2color[color][1];
+    baseNode.style.borderRadius = "25px"
 
     let node = yawas_highlight222(selectionrng, baseNode, googleColors[color]);
 
@@ -738,6 +940,7 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
 // on Firefox, we need to select the text before showing the context menu
 // on Chrome, somehow the current word is selected when the user right clicks over words
 window.oncontextmenu = function () {
+  console.log("window on context menu");
   if (hoverElement !== null)
   {
     let selection = window.getSelection();
@@ -761,7 +964,7 @@ function yawas_highlight222(range, node,backgroundColor)
     var startOffset = range.startOffset;
     var endOffset = range.endOffset;
     var docfrag = range.extractContents();
-    childrenToo(docfrag,backgroundColor);
+    // childrenToo(docfrag,backgroundColor);
     var before = startContainer.splitText(startOffset);
     var parent = before.parentNode;
     node.appendChild(docfrag);
