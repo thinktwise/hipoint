@@ -2,9 +2,7 @@
 
 This is an adaptation of the original Yawas extension.
 
-The aim is to allow user to highlight and assign up to 4 different 'categories' to the highlighted text. The meaning of this categories is up to you (in our case wie will use them for som NLP analisys).
-
-The actual combination of the 4 categories results into 2^4=16 different posibilities. In order to visually display such a big variety of information, we opted to only colour the borders of the highlighted text (please see picture 1). 
+The aim is to allow user to highlight and assign up to 4 different 'categories' to the highlighted text. The actual combination of this 4 categories results into 2^4 = 16 different posibilities. In order to visually display such a variety of posible combinations, we opted to colour the borders of the highlighted text (please see picture 1). Each side (top, right, bottom, left) has a color (on/off). If the color is off, that border will be painted in "thin gray". Otherwise, will be painted in "thick YELLOW/RED/BLUE/GREEN"
 
 ![picture1](doc/wheel.png)
 
