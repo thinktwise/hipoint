@@ -23,22 +23,9 @@ var notRemapped = [];
 /* @sscalvo: New encoding
 Yawas stores colors with 4 strings ("blue", "green", "yellow", "red") in the request.couleur field
 Thinktwise will make use of the request.couleur to bitwise encode Yawas colors + ["boder width", "color codes"]
-This is how it works:
-///// Yawas colors (mutually exclusive): will use bit 5 & 6
-0b00xxxx: blue
-0b01xxxx: green
-0b10xxxx: yellow
-0b11xxxx: red
-///// Thinktwise will use bits 1,2,3,4 to encode all the 16 wheel combinations: See 'code2color' dictionary
+We will use bitwise XOR operation on the code2color keys
 */
 
-// @sscalvo: Wont store color names anymore, but numbers (1,2,4,8)
-var color2code = {
-  yellow: 0b000000,
-  red:    0b010000,
-  blue:   0b100000,
-  green:  0b110000
-}
 
 // ["boder width", "color codes"] for implementing thinktwise wheel
 var code2color = {
