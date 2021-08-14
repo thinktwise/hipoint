@@ -17,6 +17,7 @@ googleColors[4] = '#ff9999';               //googleColors['red'] = '#ff9999';
 googleColors[8] = '#99ff99';             //googleColors['green'] = '#99ff99';
 googleColors['white'] = 'transparent';         //googleColors['white'] = 'transparent';
 var notRemapped = [];
+var selecting = true;
 
 /* @sscalvo: New encoding
 Yawas stores colors with 4 strings ("blue", "green", "yellow", "red") in the request.couleur field
@@ -75,22 +76,35 @@ tippy_content = `<div>
 </div>
 `;
 
+// Is user selecting text inside an input/textarea field?
+function insideTextarea(){ // @sscalvo
+  focusedElement = document.activeElement.tagName;
+  return (focusedElement == "INPUT" || focusedElement == "TEXTAREA");
+}
 
-// --------------------  tippy popover creation  -----------------
+/*
+We want to exit this function when: 
+  - Popover is mounted (shown) 
+  - Single clicks with 0-length selection
+  - Selection happening on textboxes and textareas 
+*/
+
+function isSelected(event){
+  console.log(event);
+  console.log("el mouse up de isSelected: exit?" + !selecting);
+  if (!selecting)
+    return false;
 
 
-function isSelected(){
-  //isSelected solo deberia mostrar el menu de Tippy desde aqui
-  //Y ese menu debería, eternamente, permitir clicks & unclicks
-  
-  // Digamos que el usuario (a traves de Tippy) elige BLUE : 4
-  // currentColor = 0;
 
   var elem = hoverElementOrSelection(); 
   console.log("---> Imprimiendo el elem");
   console.log(elem);
   // If user's selection contains/intersects a 'yawas-highlight' node, get current values to show popover coherently
-  if (elem) 
+  if (insideTextarea()){
+    console.log("User dealing with highlights inside an INPUT or TEXTAREA: exiting!");
+  }
+  else if (elem) 
   {
     // elem.dataset.yawasColor = googleColors[color];
     // elem.style.backgroundColor = googleColors[color];
@@ -104,21 +118,18 @@ function isSelected(){
     // hoverElement = elem;
     // recolor(color);
   }
-  else
+  else 
   {
     var wndWithSelection = getWindowWithSelection(window);
     yawas_tryHighlight(wndWithSelection); // lastHighlight should have been updated
     elem = lastHighlight;
     console.log("Tippy launcher: creamos un NUEVO highlight");
   }  
-  // console.log( "borderWidht: " + elem.style.borderWidth + " borderColor: "+ elem.style.borderColor);
-  // candidates = document.querySelectorAll("[data-selection='e todos l']")[0];
-  // console.log(elem.dataset.yawasSelection);
-  
+ 
 
 }
 
-// document.addEventListener('mouseup', isSelected);
+document.addEventListener('mouseup', isSelected);
 
 // This is for the floating box that shows counter 
 function dragElement(div)
@@ -567,7 +578,8 @@ function yawas_tryHighlight(wnd,addcommentwhendone)
     }
     else
     {
-        alert('Sorry, [' + selectionstring + '] was not found.');
+        // alert('Sorry, [' + selectionstring + '] was not found.');
+        console.log('Sorry, [' + selectionstring + '] was not found.');
         wnd.getSelection().removeAllRanges();
         return false;
     }
@@ -670,7 +682,7 @@ function sendMessage(info,cb)
       console.error('sendMessage error' + e);
   }
 }
-
+/*
 // see below yawas_chrome_thinktwise for thinktwise version @sscalvo
 function yawas_chrome(color)
 {
@@ -719,7 +731,7 @@ function yawas_chrome(color)
         yawas_tryHighlight(wndWithSelection);
     }
 }
-
+*/
 function yawas_chrome_thinktwise(color, elem)
 {
   newColor = elem.dataset.yawasColor ^  color;
@@ -876,7 +888,7 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
 
     node.addEventListener('mouseover',function (e) {
       hoverElement = this;
-      console.log("MOSTRAR tippy ahora");
+      // console.log("MOSTRAR tippy ahora");
       // https://stackoverflow.com/questions/3103962/converting-html-string-into-dom-elements
       var tmp_doc = new DOMParser().parseFromString(tippy_content, "text/html");
       var tippy_doc = tmp_doc.body.firstChild;
@@ -888,18 +900,21 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
         allowHTML: true,
         hideOnClick: false, 
         theme: 'light-border',
-        onHide(){          console.log("tippy onHide");         },
-        onHidden(){        console.log("tippy onHidden");         },
+        onHide(){          console.log("tippy onHide");  selecting=true;       },
+        onHidden(){        console.log("tippy onHidden"); selecting=true;        },
         onShown(){         console.log("tippy onShown");         },
         onShow(){          console.log("tippy onShow");         },
         onMount(){
           console.log("tippy onMount");
+          selecting = false;
           // This buttons only exist in the DOM after tippy onMount has been triggered
-          ybutton = document.getElementById("ybutton").onclick=function(){yawas_chrome_thinktwise(0b0001,node)}; //yellow
-          rbutton = document.getElementById("rbutton").onclick=function(){yawas_chrome_thinktwise(0b0010,node)}; //red
-          bbutton = document.getElementById("bbutton").onclick=function(){yawas_chrome_thinktwise(0b0100,node)}; //blue
-          gbutton = document.getElementById("gbutton").onclick=function(){yawas_chrome_thinktwise(0b1000,node)}; //green
-          console.log(bbutton);
+          ybutton = document.getElementById("ybutton").onclick=function(){yawas_chrome_thinktwise(0b0001,node); hoverElement = null; }; //yellow
+          rbutton = document.getElementById("rbutton").onclick=function(){yawas_chrome_thinktwise(0b0010,node); hoverElement = null; }; //red
+          bbutton = document.getElementById("bbutton").onclick=function(){yawas_chrome_thinktwise(0b0100,node); hoverElement = null; }; //blue
+          gbutton = document.getElementById("gbutton").onclick=function(){yawas_chrome_thinktwise(0b1000,node); hoverElement = null; }; //green
+          
+          // bbutton = document.getElementById("bbutton").onmouseup=function(){ console.log("XXX mouseup") }; //borrar
+
         }
       });
 
@@ -908,10 +923,10 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
 
     },false);
     
-    // node.addEventListener('mouseout',function (e) {
-    //   hoverElement = null;
-    //   console.log("OCULTAR tippy ahora");
-    // },false);
+    node.addEventListener('mouseout',function (e) {
+      hoverElement = null;
+      console.log("OCULTAR tippy ahora");
+    },false);
 
     return node;
 }
@@ -919,16 +934,19 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
 // on Firefox, we need to select the text before showing the context menu
 // on Chrome, somehow the current word is selected when the user right clicks over words
 window.oncontextmenu = function () {
-  console.log("window on context menu");
-  if (hoverElement !== null)
+  if (!insideTextarea()) // @sscalvo
   {
-    let selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      selection.removeAllRanges();
+    console.log("window on context menu");
+    if (hoverElement !== null)
+    {
+      let selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        selection.removeAllRanges();
+      }
+      let range = document.createRange();
+      range.selectNode(hoverElement);
+      selection.addRange(range);
     }
-    let range = document.createRange();
-    range.selectNode(hoverElement);
-    selection.addRange(range);
   }
 }
 
