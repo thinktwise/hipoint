@@ -1,11 +1,11 @@
 {
 "update_url": "https://clients2.google.com/service/update2/crx",
 
-  "name": "Yawas",
+  "name": "Yawas-Thinktwise",
   "author": "Laurent Denoue",
   "manifest_version": 2,
-  "version": "7.3.2",
-  "description": "Highlight Web pages; stored online and recreated automatically when you revisit a page",
+  "version": "1.0.3",
+  "description": "Yawas fork. Highlight Web pages in 4 different combined categories; stored online and recreated automatically when you revisit a page",
   "background": {"scripts": ["yawas-background.js"]},
   "content_scripts": [
     {

@@ -10,8 +10,6 @@ var leftMark = '<<';//'&ldquo;'
 var rightMark = '>>';//'&rdquo;'
 var lenquote = rightMark.length;//2;
 
-var selecting = false;
-
 var googleColors = [];
 googleColors[1] = 'yellow';             //googleColors['yellow'] = 'yellow';
 googleColors[2] = '#0df';//'lightblue';   //googleColors['blue'] = '#0df';//'lightblue';
@@ -53,10 +51,6 @@ var yawas_rosetta = ["yellow", "yellow", "red", "yellow", "blue", "yellow", "yel
 
 var ccc = 'rojo';
 
-function colorin(c){
-  console.log("Has elegido " +c );
-}
-
 // --------------------  tippy popover creation  -----------------
 tippy_content = `<div>
   <p class="tippy_title">Pick your reaction</p>
@@ -81,15 +75,11 @@ tippy_content = `<div>
 </div>
 `;
 
-// https://stackoverflow.com/questions/3103962/converting-html-string-into-dom-elements
-var tmp_doc = new DOMParser().parseFromString(tippy_content, "text/html");
-var tippy_doc = tmp_doc.body.firstChild;
+
 // --------------------  tippy popover creation  -----------------
 
 
 function isSelected(){
-  if ( selecting==true)
-    return;
   //isSelected solo deberia mostrar el menu de Tippy desde aqui
   //Y ese menu debería, eternamente, permitir clicks & unclicks
   
@@ -125,42 +115,10 @@ function isSelected(){
   // candidates = document.querySelectorAll("[data-selection='e todos l']")[0];
   // console.log(elem.dataset.yawasSelection);
   
-  selecting=true;
-  tippy(elem, {
-    content: tippy_doc,
-    interactive: true,
-    arrow: true,
-    allowHTML: true,
-    hideOnClick: false, 
-    theme: 'light-border',
-    onHide(){
-      console.log("tippy onHide");
-    },
-    onHidden(){
-      console.log("tippy onHidden");
-    },
-    onShown(){
-      selecting=false;
-      console.log("tippy onShown: selecting " + selecting);
-    },
-    onShow(){
-      console.log("tippy onShow");
-
-    },
-    onMount(){
-      console.log("tippy onMount");
-      // This buttons only exist in the DOM after tippy onMount has been triggered
-      ybutton = document.getElementById("ybutton").onclick=function(){yawas_chrome_thinktwise(0b0001,elem)}; //yellow
-      rbutton = document.getElementById("rbutton").onclick=function(){yawas_chrome_thinktwise(0b0010,elem)}; //red
-      bbutton = document.getElementById("bbutton").onclick=function(){yawas_chrome_thinktwise(0b0100,elem)}; //blue
-      gbutton = document.getElementById("gbutton").onclick=function(){yawas_chrome_thinktwise(0b1000,elem)}; //green
-      console.log(bbutton);
-    }
-  })
 
 }
 
-document.addEventListener('mouseup', isSelected);
+// document.addEventListener('mouseup', isSelected);
 
 // This is for the floating box that shows counter 
 function dragElement(div)
@@ -764,11 +722,13 @@ function yawas_chrome(color)
 
 function yawas_chrome_thinktwise(color, elem)
 {
-
-  currentColor = currentColor ^ color; //toggle colors bitwise
+  newColor = elem.dataset.yawasColor ^  color;
+  elem.dataset.yawasColor = newColor; //toggle colors bitwise
+  elem.style.borderWidth = code2color[newColor][0];
+  elem.style.borderColor = code2color[newColor][1];
   // var elem = hoverElementOrSelection();
   hoverElement = elem;
-  recolor_thinktwise(currentColor);
+  recolor_thinktwise(newColor); // updates on the db/storage
 }
 
 
@@ -890,9 +850,8 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
 {
     let baseNode = doc.createElement("yawas");//span was changing styling on some web pages
     baseNode.className = 'yawas-highlight';
-    baseNode.style.backgroundColor = googleColors[color]; // @sscalvo 
-    baseNode.addEventListener("mouseenter", function( event ) {console.log("hoveringgg: Llamar a la funcion que muestra tippy");
-  });
+    // baseNode.style.backgroundColor = googleColors[color]; // @sscalvo 
+    // baseNode.addEventListener("mouseenter", function( event ) {console.log("hoveringgg: Llamar a la funcion que muestra tippy");   });
 
     if (comment && comment > '')
     {
@@ -903,7 +862,8 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
     }
     baseNode.dataset.selection = selectionstring;
     baseNode.dataset.yawasOccurence = occurence;
-    baseNode.dataset.yawasColor = googleColors[color];
+    // baseNode.dataset.yawasColor = googleColors[color];
+    baseNode.dataset.yawasColor = color;
 
     // @sscalvo added
     baseNode.style.border="solid";
@@ -911,15 +871,47 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
     baseNode.style.borderColor = code2color[color][1];
     baseNode.style.borderRadius = "25px"
 
-    let node = yawas_highlight222(selectionrng, baseNode, googleColors[color]);
+    // let node = yawas_highlight222(selectionrng, baseNode, googleColors[color]);
+    let node = yawas_highlight222(selectionrng, baseNode, color);
 
     node.addEventListener('mouseover',function (e) {
       hoverElement = this;
-    },false);
+      console.log("MOSTRAR tippy ahora");
+      // https://stackoverflow.com/questions/3103962/converting-html-string-into-dom-elements
+      var tmp_doc = new DOMParser().parseFromString(tippy_content, "text/html");
+      var tippy_doc = tmp_doc.body.firstChild;
+      
+      tippy(node, {
+        content: tippy_doc,
+        interactive: true,
+        arrow: true,
+        allowHTML: true,
+        hideOnClick: false, 
+        theme: 'light-border',
+        onHide(){          console.log("tippy onHide");         },
+        onHidden(){        console.log("tippy onHidden");         },
+        onShown(){         console.log("tippy onShown");         },
+        onShow(){          console.log("tippy onShow");         },
+        onMount(){
+          console.log("tippy onMount");
+          // This buttons only exist in the DOM after tippy onMount has been triggered
+          ybutton = document.getElementById("ybutton").onclick=function(){yawas_chrome_thinktwise(0b0001,node)}; //yellow
+          rbutton = document.getElementById("rbutton").onclick=function(){yawas_chrome_thinktwise(0b0010,node)}; //red
+          bbutton = document.getElementById("bbutton").onclick=function(){yawas_chrome_thinktwise(0b0100,node)}; //blue
+          gbutton = document.getElementById("gbutton").onclick=function(){yawas_chrome_thinktwise(0b1000,node)}; //green
+          console.log(bbutton);
+        }
+      });
 
-    node.addEventListener('mouseout',function (e) {
-      hoverElement = null;
+
+
+
     },false);
+    
+    // node.addEventListener('mouseout',function (e) {
+    //   hoverElement = null;
+    //   console.log("OCULTAR tippy ahora");
+    // },false);
 
     return node;
 }
