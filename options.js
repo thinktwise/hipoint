@@ -1,7 +1,7 @@
 function loadOptions() {
   chrome.storage.sync.get({
     /*handlePDF: false,*/
-    saveLocally: false
+    saveLocally: true
   }, function(items) {
     //document.getElementById('handlePDF').checked = items.handlePDF;
     document.getElementById('saveLocally').checked = items.saveLocally;
@@ -22,7 +22,7 @@ function saveOptions() {
 function restoreOptions() {
   chrome.storage.sync.set({
     /*handlePDF: false,*/
-    saveLocally: false
+    saveLocally: true
   }, function() {
     //document.getElementById("handlePDF").checked = false;
     document.getElementById('saveLocally').checked = false;

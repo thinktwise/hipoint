@@ -9,7 +9,7 @@ var leftMark = '<<';//'&ldquo;'
 var rightMark = '>>';//'&rdquo;'
 var lenQuote = rightMark.length;
 var handlePDF = false;
-var saveLocally = false;
+var saveLocally = true;
 //var donate_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=R9JRASMAABUUE&item_name=Yawas+Web+and+PDF+Highlighter&currency_code=USD&source=chromeextension';
 var googleSignature = null;
 
@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener(requestCallback);
 
 chrome.storage.sync.get({
     handlePDF: false,
-    saveLocally: false,
+    saveLocally: true,
   }, function(items) {
     if (items)
     {

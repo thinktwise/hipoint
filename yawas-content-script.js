@@ -36,19 +36,19 @@ var code2color = {
   0b0101: ["medium thin medium thin", "blue lightgray yellow lightgray"],     // 5: blue + yellow
   0b0110: ["medium thin thin medium", "blue lightgray lightgray red"],        // 6: blue + red
   0b0111: ["medium thin medium medium", "blue lightgray yellow red"],         // 7: blue + yellow + red
-  0b1000: ["thin medium thin thin", "lightgray green lightgray lightgray"],   // 8: green          (right of wheel)
-  0b1001: ["thin medium medium thin", "lightgray green yellow lightgray"],    // 9: green + yellow
-  0b1010: ["thin medium thin medium", "lightgray green lightgray red"],       // 10: green + red
-  0b1011: ["thin medium medium medium", "lightgray green yellow red"],        // 11: green + yellow + red
-  0b1100: ["medium medium thin thin", "blue green lightgray lightgray"],      // 12: blue + green 
-  0b1101: ["medium medium medium thin", "blue green yellow lightgray"],       // 13: blue + green + yellow
-  0b1110: ["medium medium thin medium", "blue green lightgray red"],          // 14: blue + green + red
-  0b1111: ["medium medium medium medium", "blue green yellow red"],          // 15: blue + green + yellow + red
+  0b1000: ["thin medium thin thin", "lightgray lime lightgray lightgray"],   // 8: green          (right of wheel)
+  0b1001: ["thin medium medium thin", "lightgray lime yellow lightgray"],    // 9: green + yellow
+  0b1010: ["thin medium thin medium", "lightgray lime lightgray red"],       // 10: green + red
+  0b1011: ["thin medium medium medium", "lightgray lime yellow red"],        // 11: green + yellow + red
+  0b1100: ["medium medium thin thin", "blue lime lightgray lightgray"],      // 12: blue + green 
+  0b1101: ["medium medium medium thin", "blue lime yellow lightgray"],       // 13: blue + green + yellow
+  0b1110: ["medium medium thin medium", "blue lime lightgray red"],          // 14: blue + green + red
+  0b1111: ["medium medium medium medium", "blue lime yellow red"],          // 15: blue + green + yellow + red
 }
 
 // @sscalvo: Wont store color names anymore, but numbers (1,2,4,8) and all their combinations
 //                          0      0b0001   0b0010     3     0b0100     5         6         7      0b1000      9         10        11        12       13        14        15
-var yawas_rosetta = ["yellow", "yellow", "red", "yellow", "blue", "yellow", "yellow", "yellow", "green", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow" ]
+var yawas_rosetta = ["yellow", "yellow", "red", "yellow", "blue", "yellow", "yellow", "yellow", "lime", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow" ]
 
 var ccc = 'rojo';
 
