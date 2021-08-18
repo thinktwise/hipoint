@@ -15,7 +15,7 @@ function saveOptions() {
     /*handlePDF: handlePDF,*/
     saveLocally:saveLocally
   }, function() {
-    //window.close();
+    //window.close(); 
   });
 }
 
