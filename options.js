@@ -14,7 +14,7 @@ function saveOptions() {
   chrome.storage.sync.set({
     /*handlePDF: handlePDF,*/
     saveLocally:saveLocally
-  }, function() {
+  }, function() { 
     //window.close(); 
   });
 }
