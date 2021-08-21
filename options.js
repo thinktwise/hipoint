@@ -17,7 +17,7 @@ function saveOptions() {
   }, function() { 
     //window.close(); 
   });
-}
+} 
 
 function restoreOptions() {
   chrome.storage.sync.set({
