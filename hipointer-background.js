@@ -235,7 +235,7 @@ function yawas_getAnnotations(webUrl,cb)
 
 function yawas_setStatusIcon(s)
 {
-    chrome.browserAction.setIcon({path:"yawas_" + s + "_128.png"});
+    chrome.browserAction.setIcon({path:"hipointer_" + s + "_128.png"});
 }
 
 function sendMessageActiveTab(json)
