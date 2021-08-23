@@ -1,25 +1,25 @@
 {
 "update_url": "https://clients2.google.com/service/update2/crx",
 
-  "name": "Yawas-Thinktwise",
-  "author": "Laurent Denoue",
+  "name": "Hipointer-oauth",
+  "author": "Thinktwise",
   "manifest_version": 2,
-  "version": "1.0.3",
-  "description": "Yawas fork. Highlight Web pages in 4 different combined categories; stored online and recreated automatically when you revisit a page",
-  "background": {"scripts": ["yawas-background.js"]},
+  "version": "1.0.4",
+  "description": "Hipointer highlights Web pages in 4 different combined categories; stored in local-storage and recreated automatically when you revisit a page",
+  "background": {"scripts": ["hipointer-background.js"]},
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
       "exclude_matches": ["*://*.slack.com/*","*://web.whatsapp.com/*","*://www.google.com/bookmarks/*","*://accounts.google.com/*"],
-      "js": ["popper.min.js", "tippy.min.js", "yawas-content-script.js"],
+      "js": ["popper.min.js", "tippy.min.js", "hipointer-content-script.js"],
       "css": ["light-border.css", "tippy_content.css"],
       "all_frames": true
     }
   ],
   "permissions": ["https://www.google.com/bookmarks/*","storage","contextMenus","tabs"],
   "browser_action": {
-		"default_title": "Yawas",
-  	"default_icon": "yawas_on_128.png",
+		"default_title": "Hipointer",
+  	"default_icon": "hipointer_on_128.png",
     "default_popup": "options.html"
 	},
 	"icons": {
@@ -32,28 +32,28 @@
         "default": "Ctrl+Shift+Y",
         "mac": "Alt+Shift+Y"
       },
-      "description": "Yawas Yellow"
+      "description": "Hipointer Yellow"
     },
     "yawas-red": {
       "suggested_key": {
         "default": "Ctrl+Shift+R",
         "mac": "Alt+Shift+R"
       },
-      "description": "Yawas Red"
+      "description": "Hipointer Red"
     },
     "yawas-blue": {
       "suggested_key": {
         "default": "Ctrl+Shift+B",
         "mac": "Alt+Shift+B"
       },
-      "description": "Yawas Blue"
+      "description": "Hipointer Blue"
     },
     "yawas-green": {
       "suggested_key": {
         "default": "Ctrl+Shift+G",
         "mac": "Alt+Shift+G"
       },
-      "description": "Yawas Green"
+      "description": "Hipointer Green"
     }
   }
 }
