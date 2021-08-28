@@ -905,6 +905,7 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
         onShown(){         console.log("tippy onShown");         },
         onShow(){          console.log("tippy onShow");         },
         onMount(){
+          el_this = this;
           console.log("tippy onMount");
           selecting = false;
           // This buttons only exist in the DOM after tippy onMount has been triggered
@@ -912,6 +913,7 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
           rbutton = document.getElementById("rbutton").onclick=function(){yawas_chrome_thinktwise(0b0010,node); hoverElement = null; }; //red
           bbutton = document.getElementById("bbutton").onclick=function(){yawas_chrome_thinktwise(0b0100,node); hoverElement = null; }; //blue
           gbutton = document.getElementById("gbutton").onclick=function(){yawas_chrome_thinktwise(0b1000,node); hoverElement = null; }; //green
+          xbutton = document.getElementById("xbutton").onclick=function(){thinktwise_delete_highlight(node); hoverElement = null; node._tippy.hide();}; //green
           
           // bbutton = document.getElementById("bbutton").onmouseup=function(){ console.log("XXX mouseup") }; //borrar
 
@@ -1044,6 +1046,29 @@ function yawas_delete_highlight() {
     updateHighlightCaption();
   }
 }
+
+
+function thinktwise_delete_highlight(elem) {
+  // let elem = hoverElementOrSelection();
+  if (elem)
+  {
+    sendMessage({action: "delete_highlight", url: yawas_getGoodUrl(document), title: document.title, highlightString: elem.dataset.selection, n:elem.dataset.yawasOccurence }, function (res)
+    {
+      if (res && res.highlights)
+        setCharactersLeft(computeLength(res.highlights));
+    });
+    childrenToo(elem,null);
+    var f = document.createDocumentFragment();
+    while(elem.firstChild)
+        f.appendChild(elem.firstChild);
+    elem.parentNode.replaceChild(f,elem);
+    hoverElement = null;
+    updateHighlightCaption();
+  }
+}
+
+
+
 
 /*function editLocally()
 {
