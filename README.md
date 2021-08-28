@@ -7,7 +7,7 @@ The aim is to allow user to highlight and assign up to 4 different 'categories' 
 
 As a vehicle for the user to assign/unassign categories to a highlighted text, we used a *popover* library called **tippy** (https://kabbouchi.github.io/)
 
-Here you can see **tippy** and **Yawas-Thinktwise** in action.
+Here you can see **tippy** and **Hipointer** in action.
 
 ![picture2](doc/tippy_sample.png)
 
