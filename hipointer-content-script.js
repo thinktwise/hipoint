@@ -24,26 +24,28 @@ Yawas stores colors with 4 strings ("blue", "green", "yellow", "red") in the req
 Thinktwise will make use of the request.couleur to bitwise encode Yawas colors + ["boder width", "color codes"]
 We will use bitwise XOR operation on the code2color keys
 */
-
-
+var cgreen = "#99DF4D";
+var cpink = "#DF6B94";
+var cblue = "#53B6F6";
+var corange = "#F09D38";
 // ["boder width", "color codes"] for implementing thinktwise wheel
 var code2color = {
-  0b0000: ["thin thin thin thin", "lightgray lightgray lightgray lightgray"], // 0: no key-wheel selected, only thin gray borders to show text selected
-  0b0001: ["thin thin medium thin", "lightgray lightgray yellow lightgray"],  // 1: yellow         (bottom side of wheel)
-  0b0010: ["thin thin thin medium", "lightgray lightgray lightgray red"],     // 2: red            (left of wheel)
-  0b0011: ["thin thin medium medium", "lightgray lightgray yellow red"],      // 3: yellow + red
-  0b0100: ["medium thin thin thin", "blue lightgray lightgray lightgray"],    // 4: blue           (top of wheel)
-  0b0101: ["medium thin medium thin", "blue lightgray yellow lightgray"],     // 5: blue + yellow
-  0b0110: ["medium thin thin medium", "blue lightgray lightgray red"],        // 6: blue + red
-  0b0111: ["medium thin medium medium", "blue lightgray yellow red"],         // 7: blue + yellow + red
-  0b1000: ["thin medium thin thin", "lightgray lime lightgray lightgray"],   // 8: green          (right of wheel)
-  0b1001: ["thin medium medium thin", "lightgray lime yellow lightgray"],    // 9: green + yellow
-  0b1010: ["thin medium thin medium", "lightgray lime lightgray red"],       // 10: green + red
-  0b1011: ["thin medium medium medium", "lightgray lime yellow red"],        // 11: green + yellow + red
-  0b1100: ["medium medium thin thin", "blue lime lightgray lightgray"],      // 12: blue + green 
-  0b1101: ["medium medium medium thin", "blue lime yellow lightgray"],       // 13: blue + green + yellow
-  0b1110: ["medium medium thin medium", "blue lime lightgray red"],          // 14: blue + green + red
-  0b1111: ["medium medium medium medium", "blue lime yellow red"],          // 15: blue + green + yellow + red
+  0b0000: ["thin thin thin thin", `lightgray lightgray lightgray lightgray`   ], // 0: no key-wheel selected, only thin gray borders to show text selected
+  0b0001: ["thin thin medium thin", `lightgray lightgray ${cgreen} lightgray` ],  // 1: green         (bottom side of wheel)
+  0b0010: ["thin thin thin medium", `lightgray lightgray lightgray ${cpink}`  ],     // 2: pink            (left of wheel)
+  0b0011: ["thin thin medium medium", `lightgray lightgray ${cgreen} ${cpink}`],      // 3: green + pink
+  0b0100: ["medium thin thin thin", `${cblue} lightgray lightgray lightgray`],    // 4: blue           (top of wheel)
+  0b0101: ["medium thin medium thin", `${cblue} lightgray ${cgreen} lightgray`],     // 5: blue + yellow
+  0b0110: ["medium thin thin medium", `${cblue} lightgray lightgray ${cpink}`],        // 6: blue + red
+  0b0111: ["medium thin medium medium", `${cblue} lightgray ${cgreen} ${cpink}`],         // 7: blue + yellow + red
+  0b1000: ["thin medium thin thin", `lightgray ${corange} lightgray lightgray`],   // 8: green          (right of wheel)
+  0b1001: ["thin medium medium thin", `lightgray ${corange} ${cgreen} lightgray`],    // 9: green + yellow
+  0b1010: ["thin medium thin medium", `lightgray ${corange} lightgray ${cpink}`],       // 10: green + red
+  0b1011: ["thin medium medium medium", `lightgray ${corange} ${cgreen} ${cpink}`],        // 11: green + yellow + red
+  0b1100: ["medium medium thin thin", `${cblue} ${corange} lightgray lightgray`],      // 12: blue + green 
+  0b1101: ["medium medium medium thin", `${cblue} ${corange} ${cgreen} lightgray`],       // 13: blue + green + yellow
+  0b1110: ["medium medium thin medium", `${cblue} ${corange} lightgray ${cpink}`],          // 14: blue + green + red
+  0b1111: ["medium medium medium medium", `${cblue} ${corange} ${cgreen} ${cpink}`],          // 15: blue + green + yellow + red
 }
 
 // @sscalvo: Wont store color names anymore, but numbers (1,2,4,8) and all their combinations
@@ -53,24 +55,25 @@ var yawas_rosetta = ["yellow", "yellow", "red", "yellow", "blue", "yellow", "yel
 var ccc = 'rojo';
 
 // --------------------  tippy popover creation  -----------------
+// ● code is U+25CF
 tippy_content = `<div>
-  <p class="tippy_title">Pick your reaction</p>
+  <p class="tippy_title">Apply your criterias to selection</p>
   <hr>
   <div class="tippy_list">
-    <button  class="tippy_icons" id="ybutton">
-      <span role="img" >🟡</span>
+    <button  class="tippy_icons" id="gbutton">
+      <span style="font-size:3em;color:${cgreen}">●</span> 
     </button>
-    <button class="tippy_icons" id="rbutton">
-      <span role="img" >🔴</span>
+    <button class="tippy_icons" id="pbutton">
+      <span style="font-size:3em;color:${cpink}">●</span>
     </button>
     <button class="tippy_icons" id="bbutton">
-      <span role="img" >🔵</span>
+      <span style="font-size:3em;color:${cblue}">●</span>
     </button>
-    <button  class="tippy_icons" id="gbutton">
-      <span role="img">🟢</span>
+    <button  class="tippy_icons" id="obutton">
+      <span style="font-size:3em;color:${corange}">●</span>
     </button>
     <button  class="tippy_icons" id="xbutton">
-      <span role="img">❌</span>
+    <span style="font-size:2em;color:red;vertical-align:super">ø</span>
     </button>
     </div>
 </div>
@@ -909,11 +912,11 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
           console.log("tippy onMount");
           selecting = false;
           // This buttons only exist in the DOM after tippy onMount has been triggered
-          ybutton = document.getElementById("ybutton").onclick=function(){yawas_chrome_thinktwise(0b0001,node); hoverElement = null; }; //yellow
-          rbutton = document.getElementById("rbutton").onclick=function(){yawas_chrome_thinktwise(0b0010,node); hoverElement = null; }; //red
+          gbutton = document.getElementById("gbutton").onclick=function(){yawas_chrome_thinktwise(0b0001,node); hoverElement = null; }; //yellow
+          pbutton = document.getElementById("pbutton").onclick=function(){yawas_chrome_thinktwise(0b0010,node); hoverElement = null; }; //red
           bbutton = document.getElementById("bbutton").onclick=function(){yawas_chrome_thinktwise(0b0100,node); hoverElement = null; }; //blue
-          gbutton = document.getElementById("gbutton").onclick=function(){yawas_chrome_thinktwise(0b1000,node); hoverElement = null; }; //green
-          xbutton = document.getElementById("xbutton").onclick=function(){thinktwise_delete_highlight(node); hoverElement = null; node._tippy.hide();}; //green
+          obutton = document.getElementById("obutton").onclick=function(){yawas_chrome_thinktwise(0b1000,node); hoverElement = null; }; //green
+          xbutton = document.getElementById("xbutton").onclick=function(){thinktwise_delete_highlight(node); hoverElement = null; node._tippy.hide();}; //deletes the comment and hides popover
           
           // bbutton = document.getElementById("bbutton").onmouseup=function(){ console.log("XXX mouseup") }; //borrar
 
