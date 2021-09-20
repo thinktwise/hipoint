@@ -903,6 +903,7 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
         allowHTML: true,
         hideOnClick: false, 
         theme: 'light-border',
+        placement: 'top-end',
         onHide(){          console.log("tippy onHide");  selecting=true;       },
         onHidden(){        console.log("tippy onHidden"); selecting=true;        },
         onShown(){         console.log("tippy onShown");         },
