@@ -60,11 +60,11 @@ tippy_content = `<div>
   <p class="tippy_title">Apply your criterias to selection</p>
   <hr>
   <div class="tippy_list">
-    <button  class="tippy_icons" id="gbutton">
-      <span style="font-size:3em;color:${cgreen}">●</span> 
-    </button>
     <button class="tippy_icons" id="pbutton">
       <span style="font-size:3em;color:${cpink}">●</span>
+    </button>
+    <button  class="tippy_icons" id="gbutton">
+      <span style="font-size:3em;color:${cgreen}">●</span> 
     </button>
     <button class="tippy_icons" id="bbutton">
       <span style="font-size:3em;color:${cblue}">●</span>
