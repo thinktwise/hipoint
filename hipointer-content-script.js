@@ -77,7 +77,7 @@ tippy_content = `<div>
     </button>
     </div>
 </div>
-`;
+`; 
 
 // Is user selecting text inside an input/textarea field?
 function insideTextarea(){ // @sscalvo
