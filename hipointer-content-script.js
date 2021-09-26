@@ -23,11 +23,19 @@ var selecting = true;
 Yawas stores colors with 4 strings ("blue", "green", "yellow", "red") in the request.couleur field
 Thinktwise will make use of the request.couleur to bitwise encode Yawas colors + ["boder width", "color codes"]
 We will use bitwise XOR operation on the code2color keys
-*/
+*/ 
+
+/* colors before 25th Sept:
 var cgreen = "#99DF4D";
 var cpink = "#DF6B94";
 var cblue = "#53B6F6";
 var corange = "#F09D38";
+*/
+var cgreen = "#99DF4D";
+var cpink = "#FF9804";  // this is actually orange. -hex seems to change depending on "space", so it doesn't match the above either.
+var cblue = "#53B6F6";
+var corange = "#F06295";  // this is actually pink
+
 // ["boder width", "color codes"] for implementing thinktwise wheel
 var code2color = {
   0b0000: ["thin thin thin thin", `lightgray lightgray lightgray lightgray`   ], // 0: no key-wheel selected, only thin gray borders to show text selected
