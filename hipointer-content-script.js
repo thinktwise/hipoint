@@ -60,18 +60,18 @@ tippy_content = `<div>
   <p class="tippy_title">Apply your criterias to selection</p>
   <hr>
   <div class="tippy_list">
-    <button class="tippy_icons" id="pbutton"> 
-      <span style="font-size:3em;color:${cpink}">●</span>
-    </button>
-    <button  class="tippy_icons" id="gbutton">
-      <span style="font-size:3em;color:${cgreen}">●</span> 
-    </button>
-    <button class="tippy_icons" id="bbutton">
-      <span style="font-size:3em;color:${cblue}">●</span>
-    </button>
-    <button  class="tippy_icons" id="obutton">
-      <span style="font-size:3em;color:${corange}">●</span>
-    </button>
+  <button  class="tippy_icons" id="obutton">
+    <span style="font-size:3em;color:${corange}">●</span>
+  </button>
+  <button  class="tippy_icons" id="gbutton">
+  <span style="font-size:3em;color:${cgreen}">●</span> 
+  </button>
+  <button class="tippy_icons" id="bbutton">
+  <span style="font-size:3em;color:${cblue}">●</span>
+  </button>
+  <button class="tippy_icons" id="pbutton"> 
+    <span style="font-size:3em;color:${cpink}">●</span>
+  </button>
     <button  class="tippy_icons" id="xbutton">
     <span style="font-size:2em;color:red;vertical-align:super">ø</span>
     </button>
