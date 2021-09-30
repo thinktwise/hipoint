@@ -60,7 +60,7 @@ var ccc = 'rojo';
 // --------------------  tippy popover creation  -----------------
 // ● code is U+25CF
 tippy_content = `<div>
-  <p class="tippy_title"> Clear         trust       Target         New                
+  <p class="tippy_title">&nbsp;Clear&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trust&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Target&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New                
 </p>
   <hr>
   <div class="tippy_list">
