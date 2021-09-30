@@ -2,7 +2,7 @@ console.log("el hipointer-content-script.js !!");
 var signedin = false;
 var highlightswrapper = document.querySelector('#yawas_highlightswrapper');
 var forecolor = "#000000";
-var currentColor = 0;
+var currentColor = 0; // This is used for default pre-highlight color
 var hoverColor = 'lightgray';//'pink'
 var hoverElement = null;
 var lastHighlight = null;
@@ -30,6 +30,9 @@ var cgreen = "#99DF4D";
 var corange = "#FF9804";  
 var cblue = "#53B6F6";
 var cpink = "#F06295"; 
+var cblack = "#000000"; 
+
+const code_to_color = [ cgreen, cpink, cblue, corange ] ;
 
 // ["boder width", "color codes"] for implementing thinktwise wheel
 var code2color = {
@@ -49,7 +52,7 @@ var code2color = {
   0b1101: ["medium medium medium thin", `${cblue} ${corange} ${cgreen} lightgray`],       // 13: blue + green + yellow
   0b1110: ["medium medium thin medium", `${cblue} ${corange} lightgray ${cpink}`],          // 14: blue + green + red
   0b1111: ["medium medium medium medium", `${cblue} ${corange} ${cgreen} ${cpink}`],          // 15: blue + green + yellow + red
-} 
+}
 
 // @sscalvo: Wont store color names anymore, but numbers (1,2,4,8) and all their combinations
 //                          0      0b0001   0b0010     3     0b0100     5         6         7      0b1000      9         10        11        12       13        14        15
@@ -60,21 +63,20 @@ var ccc = 'rojo';
 // --------------------  tippy popover creation  -----------------
 // ● code is U+25CF
 tippy_content = `<div>
-  <p class="tippy_title">&nbsp;Clear&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trust&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Target&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New                
-</p>
+  <p class="tippy_title">Apply your criterias to selection</p>
   <hr>
   <div class="tippy_list">
   <button  class="tippy_icons" id="obutton">
-    <span style="font-size:3em;color:${corange}">●</span>
+    <div class="tippy_circle" style="background-color:${corange}"></div>
   </button>
   <button  class="tippy_icons" id="gbutton">
-  <span style="font-size:3em;color:${cgreen}">●</span> 
+    <div class="tippy_circle" style="background-color:${cgreen}"></div>
   </button>
   <button class="tippy_icons" id="bbutton">
-  <span style="font-size:3em;color:${cblue}">●</span>
+    <div class="tippy_circle" style="background-color:${cblue}"></div>
   </button>
   <button class="tippy_icons" id="pbutton"> 
-    <span style="font-size:3em;color:${cpink}">●</span>
+    <div class="tippy_circle" style="background-color:${cpink}"></div>
   </button>
     <button  class="tippy_icons" id="xbutton">
     <span style="font-size:2em;color:red;vertical-align:super">ø</span>
@@ -130,7 +132,6 @@ function isSelected(event){
     var wndWithSelection = getWindowWithSelection(window);
     yawas_tryHighlight(wndWithSelection); // lastHighlight should have been updated
     elem = lastHighlight;
-    console.log("Tippy launcher: creamos un NUEVO highlight");
   }  
  
 
@@ -510,6 +511,7 @@ function addHighlightsWrapper()
 
 function yawas_storeHighlight(webUrl,title,highlight,occurence,couleur,addcommentwhendone)
 {
+
     var additionalInfo = {
         "fn": "addhighlight",
         "title": title,
@@ -518,6 +520,8 @@ function yawas_storeHighlight(webUrl,title,highlight,occurence,couleur,addcommen
         "occurence": occurence,
         "couleur": couleur //+ "twc"
     };
+
+
     sendMessage(additionalInfo, function (res)
     {
       if (res.addedhighlight)
@@ -578,8 +582,11 @@ function yawas_tryHighlight(wnd,addcommentwhendone)
         occurence = -1;
     if (occurence >= 0)
     {
+      console.log("Tippy launcher: creamos un NUEVO highlight y el default pre-highligth es " + currentColor);
         lastHighlight = highlightNowFirefox22(wnd.getSelection().getRangeAt(0),currentColor,forecolor,wnd.document,selectionstring,occurence);
         wnd.getSelection().removeAllRanges();
+        console.log("585: Antes de llamar a yawas_store. El currentColor es :" );
+        console.log(currentColor);
         yawas_storeHighlight(docurl,wnd.document.title,selectionstring,occurence,currentColor,addcommentwhendone);
         return true;
     }
@@ -644,17 +651,16 @@ function recolor(color)
   }
 }
 
-function recolor_thinktwise(color)
-{
-  //hoverElement.dataset.yawasColor = googleColors[color];
-  //hoverElement.style.backgroundColor = googleColors[color];
-  hoverElement.style.borderWidth = code2color[color][0];
-  hoverElement.style.borderColor = code2color[color][1];
-  // childrenToo(hoverElement,googleColors[color]);
-  updateHighlight(hoverElement,color,null);
-  // clear the selection (on Firefox we selected the text inside oncontextmenu)
-  window.getSelection().removeAllRanges();
-}
+// function recolor_thinktwise(color)
+// {
+//   update_elem_style( hoverElement ) ;
+//   // hoverElement.style.borderWidth = code2color[color][0];
+//   // hoverElement.style.borderColor = code2color[color][1];
+//   // childrenToo(hoverElement,googleColors[color]);
+//   updateHighlight(hoverElement,color,null);
+//   // clear the selection (on Firefox we selected the text inside oncontextmenu)
+//   window.getSelection().removeAllRanges();
+// }
 
 // from http://stackoverflow.com/questions/1482832/how-to-get-all-elements-that-are-highlighted/1483487#1483487
 function rangeIntersectsNode(range, node) {
@@ -739,15 +745,54 @@ function yawas_chrome(color)
     }
 }
 */
-function yawas_chrome_thinktwise(color, elem)
+
+function get_color ( elem, index )
 {
-  newColor = elem.dataset.yawasColor ^  color;
-  elem.dataset.yawasColor = newColor; //toggle colors bitwise
-  elem.style.borderWidth = code2color[newColor][0];
-  elem.style.borderColor = code2color[newColor][1];
+ return (elem.dataset.yawasColor >> (index*2)) & 0x3 ;
+}
+
+
+function set_color ( elem, index, value )
+{
+  const mask = ~( 0x3 << ( index * 2 ) ) ;
+
+  elem.dataset.yawasColor &= mask ;
+  elem.dataset.yawasColor |= ( value << ( index * 2 ) ) ;
+}
+
+function update_elem_style ( elem )
+{
+  const border_width = ( index ) => get_color( elem, index ) === 0 ? "1px" : "2px" ;
+  const border_color = ( index ) =>
+  {
+    const code = get_color( elem, index ) ;
+
+    return code === 0 ? "lightGray"
+         : code === 1 ? code_to_color[ index ]
+         :              cblack ;
+  }
+
+  elem.style.borderWidth = [0,1,2,3].map( border_width ).join( " " ) ;
+  elem.style.borderColor = [0,1,2,3].map( border_color ).join( " " ) ;
+}
+
+function yawas_chrome_thinktwise(color_index, elem, negated)
+{
+  const current_color = get_color( elem, color_index ) ;
+  const code          = (negated ? 3 : 1) ;
+  const new_color     = current_color === 0          ? code
+                      : current_color < 3 && negated ? code
+                      :                                   0 ;
+
+  set_color( elem, color_index, new_color ) ;
+  update_elem_style( elem ) ;
+  hoverElement = elem ;
+  updateHighlight( elem, elem.dataset.yawasColor, null ) ;
+
   // var elem = hoverElementOrSelection();
-  hoverElement = elem;
-  recolor_thinktwise(newColor); // updates on the db/storage
+  // recolor_thinktwise( elem.dataset.yawasColor ) ; // updates on the db/storage
+  // clear the selection (on Firefox we selected the text inside oncontextmenu)
+  window.getSelection().removeAllRanges();
 }
 
 
@@ -886,9 +931,8 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
 
     // @sscalvo added
     baseNode.style.border="solid";
-    baseNode.style.borderWidth = code2color[color][0];
-    baseNode.style.borderColor = code2color[color][1];
     baseNode.style.borderRadius = "25px"
+    update_elem_style( baseNode ) ;
 
     // let node = yawas_highlight222(selectionrng, baseNode, googleColors[color]);
     let node = yawas_highlight222(selectionrng, baseNode, color);
@@ -917,11 +961,30 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
           console.log("tippy onMount");
           selecting = false;
           // This buttons only exist in the DOM after tippy onMount has been triggered
-          gbutton = document.getElementById("gbutton").onclick=function(){yawas_chrome_thinktwise(0b0001,node); hoverElement = null; }; //yellow
-          pbutton = document.getElementById("pbutton").onclick=function(){yawas_chrome_thinktwise(0b0010,node); hoverElement = null; }; //red
-          bbutton = document.getElementById("bbutton").onclick=function(){yawas_chrome_thinktwise(0b0100,node); hoverElement = null; }; //blue
-          obutton = document.getElementById("obutton").onclick=function(){yawas_chrome_thinktwise(0b1000,node); hoverElement = null; }; //green
-          xbutton = document.getElementById("xbutton").onclick=function(){thinktwise_delete_highlight(node); hoverElement = null; node._tippy.hide();}; //deletes the comment and hides popover
+          gbutton = document.getElementById("gbutton") ;
+          pbutton = document.getElementById("pbutton") ;
+          bbutton = document.getElementById("bbutton") ;
+          obutton = document.getElementById("obutton") ;
+          xbutton = document.getElementById("xbutton") ;
+
+          const setColor = function ( color, negated ){
+            return function ( ) { 
+              yawas_chrome_thinktwise(color,node, negated); 
+              hoverElement = null;
+            }
+          }
+
+
+          gbutton.addEventListener( 'click', setColor( 0 ) ) ; //yellow
+          pbutton.addEventListener( 'click', setColor( 1 ) ) ; //red
+          bbutton.addEventListener( 'click', setColor( 2 ) ) ; //blue
+          obutton.addEventListener( 'click', setColor( 3 ) ) ; //green
+          xbutton.addEventListener( 'click', function(){thinktwise_delete_highlight(node); hoverElement = null; node._tippy.hide();}); //deletes the comment and hides popover
+          
+          gbutton.addEventListener('dblclick', setColor( 0, true) ) ;
+          pbutton.addEventListener('dblclick', setColor( 1, true) ) ;          
+          bbutton.addEventListener('dblclick', setColor( 2, true) ) ;
+          obutton.addEventListener('dblclick', setColor( 3, true) ) ;
           
           // bbutton = document.getElementById("bbutton").onmouseup=function(){ console.log("XXX mouseup") }; //borrar
 
@@ -981,9 +1044,21 @@ function yawas_highlight222(range, node,backgroundColor)
 
 function updateHighlight(elt,color,newcomment)
 {
-    if (elt)
-    {
-        sendMessage({action: "recolor_highlight", url: yawas_getGoodUrl(document), title: document.title, highlightString: hoverElement.dataset.selection, n:hoverElement.dataset.yawasOccurence, newcolor: color, comment:newcomment}, function (res){
+  
+  if (elt)
+  {
+    currentColor = color; //@sscalvo for default color
+      console.log("Default pre-highlight: " + currentColor);
+
+        sendMessage( { action: "recolor_highlight"
+                     , url: yawas_getGoodUrl(document)
+                     , title: document.title
+                     , highlightString: elt.dataset.selection
+                     , n: elt.dataset.yawasOccurence
+                     , newcolor: color
+                     , comment:newcomment
+                     }
+                   , function (res){
           if (res.error)
           {
             //console.error(res);
