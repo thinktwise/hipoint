@@ -49,7 +49,7 @@ var code2color = {
   0b1101: ["medium medium medium thin", `${cblue} ${corange} ${cgreen} lightgray`],       // 13: blue + green + yellow
   0b1110: ["medium medium thin medium", `${cblue} ${corange} lightgray ${cpink}`],          // 14: blue + green + red
   0b1111: ["medium medium medium medium", `${cblue} ${corange} ${cgreen} ${cpink}`],          // 15: blue + green + yellow + red
-}
+} 
 
 // @sscalvo: Wont store color names anymore, but numbers (1,2,4,8) and all their combinations
 //                          0      0b0001   0b0010     3     0b0100     5         6         7      0b1000      9         10        11        12       13        14        15
