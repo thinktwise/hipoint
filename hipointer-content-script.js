@@ -60,7 +60,7 @@ var ccc = 'rojo';
 // --------------------  tippy popover creation  -----------------
 // ● code is U+25CF
 tippy_content = `<div>
-  <p class="tippy_title">Apply your criterias to selection</p>
+  <p class="tippy_title">Apply your criteria to selection</p>
   <hr>
   <div class="tippy_list">
   <button  class="tippy_icons" id="obutton">
