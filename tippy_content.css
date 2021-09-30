@@ -19,6 +19,7 @@
 .tippy_title {
   margin: 5px 0px;
   color: rgb(119, 119, 119);
+  user-select: none ;
 }
 
 .tippy_list {
@@ -26,4 +27,10 @@
   padding-left: 0px;
   list-style: none;
   text-align: left;
+}
+
+.tippy_circle {
+  border-radius: 50% ;
+  width: 2em ;
+  height: 2em ;
 }
