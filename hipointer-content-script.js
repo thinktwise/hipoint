@@ -3,6 +3,7 @@ var signedin = false;
 var highlightswrapper = document.querySelector('#yawas_highlightswrapper');
 var forecolor = "#000000";
 var currentColor = 0; // This is used for default pre-highlight color
+var button_clicked=false; // Used yo only update currentColor when an actual button is clicked
 var hoverColor = 'lightgray';//'pink'
 var hoverElement = null;
 var lastHighlight = null;
@@ -32,7 +33,7 @@ var cblue = "#53B6F6";
 var cpink = "#F06295"; 
 var cblack = "#000000"; 
 
-const code_to_color = [ cgreen, cpink, cblue, corange ] ;
+const code_to_color = [ cblue, cpink, cgreen, corange ] ; // 
 
 // ["boder width", "color codes"] for implementing thinktwise wheel
 var code2color = {
@@ -63,17 +64,17 @@ var ccc = 'rojo';
 // --------------------  tippy popover creation  -----------------
 // ● code is U+25CF
 tippy_content = `<div>
-  <p class="tippy_title">Apply your criterias to selection</p>
+  <p class="tippy_title" style="text-align:justify;text-justify:inter-word;">&nbsp;&nbsp;&nbsp;Clear &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Trust&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Target &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New</p>
   <hr>
   <div class="tippy_list">
   <button  class="tippy_icons" id="obutton">
     <div class="tippy_circle" style="background-color:${corange}"></div>
   </button>
-  <button  class="tippy_icons" id="gbutton">
-    <div class="tippy_circle" style="background-color:${cgreen}"></div>
+  <button  class="tippy_icons" id="bbutton">
+    <div class="tippy_circle" style="background-color:${cgreen}"></div>                       <!-- ojo! boton BLUE bbuton + GREEN color  !!! -->
   </button>
-  <button class="tippy_icons" id="bbutton">
-    <div class="tippy_circle" style="background-color:${cblue}"></div>
+  <button class="tippy_icons" id="gbutton">
+    <div class="tippy_circle" style="background-color:${cblue}"></div>                        <!--  ojo! boton GREEN gbuton + BLUE color  !!! -->
   </button>
   <button class="tippy_icons" id="pbutton"> 
     <div class="tippy_circle" style="background-color:${cpink}"></div>
@@ -585,8 +586,7 @@ function yawas_tryHighlight(wnd,addcommentwhendone)
       console.log("Tippy launcher: creamos un NUEVO highlight y el default pre-highligth es " + currentColor);
         lastHighlight = highlightNowFirefox22(wnd.getSelection().getRangeAt(0),currentColor,forecolor,wnd.document,selectionstring,occurence);
         wnd.getSelection().removeAllRanges();
-        console.log("585: Antes de llamar a yawas_store. El currentColor es :" );
-        console.log(currentColor);
+
         yawas_storeHighlight(docurl,wnd.document.title,selectionstring,occurence,currentColor,addcommentwhendone);
         return true;
     }
@@ -969,6 +969,8 @@ function highlightNowFirefox22(selectionrng,color,textcolor,doc, selectionstring
 
           const setColor = function ( color, negated ){
             return function ( ) { 
+              button_clicked=true;
+              console.log("La funcion: button_clicked " + button_clicked + " el color es " + color)
               yawas_chrome_thinktwise(color,node, negated); 
               hoverElement = null;
             }
@@ -1047,8 +1049,12 @@ function updateHighlight(elt,color,newcomment)
   
   if (elt)
   {
-    currentColor = color; //@sscalvo for default color
-      console.log("Default pre-highlight: " + currentColor);
+    if (button_clicked != false){
+      currentColor = color; //@sscalvo for default color
+      console.log("currentColor: " + currentColor + " button_clicked:" + button_clicked);
+      button_clicked=false;
+
+    }
 
         sendMessage( { action: "recolor_highlight"
                      , url: yawas_getGoodUrl(document)
